@@ -2,24 +2,17 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <!-- 视口设置：禁止缩放，适配刘海屏 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>餐饮店投资计算器</title>
+    <title>餐饮店投资计算工具</title>
     
-    <!-- 网站图标 (Favicon) - 使用计算器 SVG 图标，品牌色 Indigo -->
+    <!-- 网站图标 (SVG 计算器) -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234F46E5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='16' height='20' x='4' y='2' rx='2'/%3E%3Cline x1='8' x2='16' y1='6' y2='6'/%3E%3Cline x1='16' x2='16' y1='14' y2='18'/%3E%3Cpath d='M16 10h.01'/%3E%3Cpath d='M12 10h.01'/%3E%3Cpath d='M8 10h.01'/%3E%3Cpath d='M12 14h.01'/%3E%3Cpath d='M8 14h.01'/%3E%3Cpath d='M12 18h.01'/%3E%3Cpath d='M8 18h.01'/%3E%3C/svg%3E">
     
-    <!-- 引入 React 和 ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    
-    <!-- 引入 Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- 引入 Inter 字体 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -41,18 +34,23 @@
     </script>
 
     <style>
-        /* 核心魔法：响应式根字体缩放 
-           这会让页面在不同宽度的屏幕上“等比例放大”，
-           而不是简单地拉宽间距。
-        */
+        /* --- 核心魔法：真·流体响应式 (Fluid Typography) --- */
         html {
-            font-size: 16px; /* 默认基准 */
+            /* 移动端默认基准 */
+            font-size: 16px; 
         }
-        @media (min-width: 1280px) {
-            html { font-size: 18px; } /* 大屏放大 112.5% */
-        }
-        @media (min-width: 1536px) {
-            html { font-size: 20px; } /* 超大屏放大 125% */
+
+        /* 仅在电脑端 (宽度 > 1024px) 启用流体缩放 */
+        @media (min-width: 1024px) {
+            html {
+                /* clamp(最小值, 流体值, 最大值)
+                   - 最小值 16px: 保证在 1024px 笔记本上保持您满意的紧凑度。
+                   - 流体值 1.5vw: 随着屏幕变宽，每 100px 宽度增加 1.5px 字号。
+                     这意味着整个界面的所有元素（rem单位）都会严格按比例放大。
+                   - 最大值 24px: 防止在 4K 巨幕上变得过于巨大。
+                */
+                font-size: clamp(16px, 1.5vw, 24px);
+            }
         }
 
         body {
@@ -77,13 +75,13 @@
     <script type="text/babel">
         const { useState } = React;
 
-        // 图标组件 (修改为接收 className 来控制大小，实现跟随 rem 缩放)
+        // 图标组件 (使用 em 单位，跟随父级字体大小自动缩放)
         const CalculatorIcon = ({className=""}) => (<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>);
         const HammerIcon = ({className=""}) => (<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m15 12-8.5 8.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0a2.12 2.12 0 0 1 0-3L12 9"/><path d="M17.64 15 22 10.64"/><path d="m20.91 11.7-1.25-1.25c-.6-.6-.93-1.4-.93-2.25V7.86c0-.55-.45-1-1-1H14.14c-.83 0-1.64.33-2.25.94L9.5 10.2"/></svg>);
         const PieChartIcon = ({className=""}) => (<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>);
         const TrendingUpIcon = ({className=""}) => (<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>);
 
-        // 输入框组件 - 紧凑版
+        // 输入框组件 - 紧凑版 (使用 em/rem 确保随根字体缩放)
         const InputField = ({ label, value, onChange, required, suffix = "", prefix = "¥", theme = "indigo" }) => {
             const focusColorClasses = {
                 orange: "focus-within:border-orange-400 focus-within:shadow-[0_0_0_2px_rgba(251,146,60,0.15)]",
@@ -155,6 +153,7 @@
 
         const ModuleHeader = ({ icon: Icon, title, bgColor, iconColor }) => (
             <div className="flex items-center gap-2 mb-2 pl-1">
+                {/* 图标容器使用 w-7 h-7 这种相对单位，随字体缩放 */}
                 <div className={`w-7 h-7 rounded-lg flex items-center justify-center shadow-sm transition-transform hover:scale-105 ${bgColor} dark:bg-opacity-20`}>
                     <Icon className={`w-4 h-4 ${iconColor}`} strokeWidth={2.5} />
                 </div>
@@ -189,12 +188,15 @@
             const exBreakEven = exMargin > 0 ? exFixedCost / exMargin : 0;
 
             return (
-                // 布局策略：
-                // 1. max-w-5xl 锁定最大宽度 (约1024px)，保持布局紧凑不拉伸。
-                // 2. 通过 html { font-size } 的媒体查询，在大屏上等比例放大整个容器。
-                // 3. lg:justify-center 保证在垂直空间足够时居中显示。
+                // 布局核心：
+                // lg:justify-center: 垂直居中
+                // 字体大小变化后，rem 单位会自动调整，max-w-5xl 也会跟着变大，实现等比缩放。
                 <div className="min-h-screen bg-[#F2F3F5] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 font-sans p-2 lg:p-4 transition-colors duration-300 flex flex-col items-center lg:justify-center">
                     
+                    {/* 使用 max-w-5xl (64rem) 作为基准。
+                        在 1024px 屏幕上，1rem=16px, 宽度=1024px。
+                        在 1920px 屏幕上，1rem~24px, 宽度=1536px。
+                        完美实现等比放大。 */}
                     <div className="w-full max-w-5xl flex flex-col">
                         
                         {/* Header */}
@@ -203,13 +205,13 @@
                                 <div className="p-2 bg-white dark:bg-slate-800 rounded-xl text-slate-800 dark:text-white shadow-sm border border-white dark:border-white/10">
                                     <CalculatorIcon className="w-5 h-5 stroke-2 text-indigo-600 dark:text-indigo-400" />
                                 </div>
-                                <h1 className="text-lg font-black tracking-tighter text-slate-800 dark:text-white font-sans">餐饮店投资计算器</h1>
+                                <h1 className="text-lg font-black tracking-tighter text-slate-800 dark:text-white font-sans">餐饮投资计算器</h1>
                             </div>
                             
                             <div className="hidden md:flex items-center gap-4 text-[10px] font-bold text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 py-1.5 px-4 rounded-full shadow-sm border border-white/60 dark:border-white/10">
-                                <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> 红点部分为必填项</span>
+                                <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> 必填</span>
                                 <span className="w-px h-3 bg-slate-200 dark:bg-slate-700"></span>
-                                <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> 输入会自动计算结果</span>
+                                <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> 自动</span>
                             </div>
                         </div>
 
@@ -220,12 +222,12 @@
                                 <div className="h-1 w-full bg-orange-200"></div>
                                 <div className="p-4 pb-1"><ModuleHeader icon={HammerIcon} title="新开店：建店成本" bgColor="bg-orange-50" iconColor="text-orange-500" /></div>
                                 <div className="px-4 pb-4 flex-1 space-y-0.5">
-                                    <InputField theme="orange" label="每月房租 (元)" value={newStore.rent} onChange={v => setNewStore({...newStore, rent: v})} required />
-                                    <InputField theme="orange" label="几个月一付" value={newStore.paymentTerms} onChange={v => setNewStore({...newStore, paymentTerms: v})} suffix="" required prefix="" />
+                                    <InputField theme="orange" label="房租 (元/月)" value={newStore.rent} onChange={v => setNewStore({...newStore, rent: v})} required />
+                                    <InputField theme="orange" label="支付方式 (月)" value={newStore.paymentTerms} onChange={v => setNewStore({...newStore, paymentTerms: v})} suffix="" required prefix="" />
                                     <InputField theme="orange" label="押金" value={newStore.deposit} onChange={v => setNewStore({...newStore, deposit: v})} />
-                                    <InputField theme="orange" label="转让费/中介费" value={newStore.transferFee} onChange={v => setNewStore({...newStore, transferFee: v})} />
-                                    <InputField theme="orange" label="加盟费/学习费" value={newStore.franchiseFee} onChange={v => setNewStore({...newStore, franchiseFee: v})} />
-                                    <InputField theme="orange" label="装修费/广告费" value={newStore.renovationAds} onChange={v => setNewStore({...newStore, renovationAds: v})} />
+                                    <InputField theme="orange" label="转让费/中介" value={newStore.transferFee} onChange={v => setNewStore({...newStore, transferFee: v})} />
+                                    <InputField theme="orange" label="加盟/学习费" value={newStore.franchiseFee} onChange={v => setNewStore({...newStore, franchiseFee: v})} />
+                                    <InputField theme="orange" label="装修+广告" value={newStore.renovationAds} onChange={v => setNewStore({...newStore, renovationAds: v})} />
                                     <InputField theme="orange" label="设备费" value={newStore.equipment} onChange={v => setNewStore({...newStore, equipment: v})} />
                                     <InputField theme="orange" label="首批物料" value={newStore.materials} onChange={v => setNewStore({...newStore, materials: v})} />
                                 </div>
@@ -239,8 +241,8 @@
                                 <div className="h-1 w-full bg-indigo-200"></div>
                                 <div className="p-4 pb-1"><ModuleHeader icon={PieChartIcon} title="新开店：盈亏平衡" bgColor="bg-indigo-50" iconColor="text-indigo-500" /></div>
                                 <div className="px-4 pb-4 flex-1 space-y-0.5">
-                                    <InputField theme="indigo" label="预估人工费 (每月)" value={newStore.monthlyLabor} onChange={v => setNewStore({...newStore, monthlyLabor: v})} required />
-                                    <InputField theme="indigo" label="预估水/电/杂费 (每月)" value={newStore.utilities} onChange={v => setNewStore({...newStore, utilities: v})} required />
+                                    <InputField theme="indigo" label="每月人工" value={newStore.monthlyLabor} onChange={v => setNewStore({...newStore, monthlyLabor: v})} required />
+                                    <InputField theme="indigo" label="水电杂费(月)" value={newStore.utilities} onChange={v => setNewStore({...newStore, utilities: v})} required />
                                     <InputField theme="indigo" label="预估毛利率" value={newStore.grossMargin} onChange={v => setNewStore({...newStore, grossMargin: v})} required prefix="%" suffix="" />
                                     {/* 移除了中间的装饰性文字块，极大节省空间 */}
                                 </div>
@@ -253,22 +255,22 @@
                             {/* 模块3 */}
                             <div className="bg-white dark:bg-[#111623] rounded-2xl shadow-sm border border-white dark:border-white/5 flex flex-col h-auto overflow-hidden">
                                 <div className="h-1 w-full bg-emerald-200"></div>
-                                <div className="p-4 pb-1"><ModuleHeader icon={TrendingUpIcon} title="已开店：经营分析" bgColor="bg-emerald-50" iconColor="text-emerald-500" /></div>
+                                <div className="p-4 pb-1"><ModuleHeader icon={TrendingUpIcon} title="已开店经营分析" bgColor="bg-emerald-50" iconColor="text-emerald-500" /></div>
                                 <div className="px-4 pb-4 flex-1 space-y-0.5">
-                                    <InputField theme="emerald" label="营业额 (每天)" value={existingStore.dailyRevenue} onChange={v => setExistingStore({...existingStore, dailyRevenue: v})} required />
-                                    <InputField theme="emerald" label="房租 (每天)" value={existingStore.dailyRent} onChange={v => setExistingStore({...existingStore, dailyRent: v})} required />
-                                    <InputField theme="emerald" label="人工 (每天)" value={existingStore.dailyLabor} onChange={v => setExistingStore({...existingStore, dailyLabor: v})} required />
-                                    <InputField theme="emerald" label="水/电/杂费 (每天)" value={existingStore.dailyUtilities} onChange={v => setExistingStore({...existingStore, dailyUtilities: v})} required />
+                                    <InputField theme="emerald" label="营业额 / 天" value={existingStore.dailyRevenue} onChange={v => setExistingStore({...existingStore, dailyRevenue: v})} required />
+                                    <InputField theme="emerald" label="房租 / 天" value={existingStore.dailyRent} onChange={v => setExistingStore({...existingStore, dailyRent: v})} required />
+                                    <InputField theme="emerald" label="人工 / 天" value={existingStore.dailyLabor} onChange={v => setExistingStore({...existingStore, dailyLabor: v})} required />
+                                    <InputField theme="emerald" label="水电杂费 / 天" value={existingStore.dailyUtilities} onChange={v => setExistingStore({...existingStore, dailyUtilities: v})} required />
                                     <InputField theme="emerald" label="实际毛利率" value={existingStore.grossMargin} onChange={v => setExistingStore({...existingStore, grossMargin: v})} required prefix="%" suffix="" />
                                 </div>
                                 <div className="bg-slate-50 dark:bg-[#0F131F] border-t border-slate-100 dark:border-white/5 mt-auto">
                                     <div className="flex border-b border-slate-100 dark:border-white/5">
-                                        <ResultBox label="毛利 (每天)" value={exGrossProfit} isNegativeRed={true} />
-                                        <ResultBox label="固定成本 (每天)" value={exFixedCost} isLast={true} isNegativeRed={true} />
+                                        <ResultBox label="毛利 (天)" value={exGrossProfit} isNegativeRed={true} />
+                                        <ResultBox label="固定成本 (天)" value={exFixedCost} isLast={true} isNegativeRed={true} />
                                     </div>
                                     <div className="flex">
-                                        <ResultBox label="保本线 (每天)" value={exBreakEven} isNegativeRed={true} subtext="固定成本 ÷ 毛利率" />
-                                        <ResultBox label="净利润 (每天)" value={exNetProfit} isNegativeRed={true} subtext="毛利 - 固定成本" isLast={true} />
+                                        <ResultBox label="保本线 (营业额)" value={exBreakEven} isNegativeRed={true} subtext="固定成本 ÷ 毛利率" />
+                                        <ResultBox label="净利润 (天)" value={exNetProfit} isNegativeRed={true} subtext="毛利 - 固定成本" isLast={true} />
                                     </div>
                                 </div>
                             </div>
