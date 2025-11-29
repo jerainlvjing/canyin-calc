@@ -34,6 +34,10 @@
                     },
                     colors: {
                         slate: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155', 800: '#1e293b', 900: '#0f172a' },
+                    },
+                    screens: {
+                        'xl': '1280px',
+                        '2xl': '1536px',
                     }
                 }
             }
@@ -175,11 +179,14 @@
             const exBreakEven = exMargin > 0 ? exFixedCost / exMargin : 0;
 
             return (
-                <div className="min-h-screen bg-[#F2F3F5] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 font-sans p-2 lg:p-4 transition-colors duration-300 pb-10 flex flex-col items-center">
-                    {/* 修改点：max-w 从 1600px 减小到 6xl (约1150px)，让电脑端更紧凑 */}
-                    <div className="w-full max-w-6xl mx-auto h-full flex flex-col">
+                // 调整：添加 lg:flex lg:flex-col lg:justify-center 以实现电脑端垂直居中
+                // 调整：min-h-screen 保证至少占满一屏
+                <div className="min-h-screen bg-[#F2F3F5] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 font-sans p-2 lg:p-4 transition-colors duration-300 flex flex-col items-center lg:justify-center">
+                    
+                    {/* 调整：响应式宽度 max-w-5xl -> xl:max-w-7xl -> 2xl:max-w-[1600px] */}
+                    <div className="w-full max-w-5xl xl:max-w-7xl 2xl:max-w-[1600px] flex flex-col">
                         
-                        {/* Header 更加紧凑 */}
+                        {/* Header */}
                         <div className="flex flex-col md:flex-row items-center justify-between mb-3 pb-2 gap-2">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-white dark:bg-slate-800 rounded-xl text-slate-800 dark:text-white shadow-sm border border-white dark:border-white/10">
@@ -195,8 +202,8 @@
                             </div>
                         </div>
 
-                        {/* 核心布局: 减小 gap */}
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4 items-start">
+                        {/* 核心布局: 响应式 Gap */}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4 xl:gap-6 2xl:gap-8 items-start">
                             {/* 模块1 */}
                             <div className="bg-white dark:bg-[#111623] rounded-2xl shadow-sm border border-white dark:border-white/5 flex flex-col h-auto overflow-hidden">
                                 <div className="h-1 w-full bg-orange-200"></div>
