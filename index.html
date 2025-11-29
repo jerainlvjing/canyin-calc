@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <!-- 视口设置：禁止缩放，适配刘海屏 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>餐饮店投资计算器</title>
+    <title>餐饮店投资计算工具</title>
     
     <!-- 网站图标 (Favicon) - 使用计算器 SVG 图标，品牌色 Indigo -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234F46E5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='16' height='20' x='4' y='2' rx='2'/%3E%3Cline x1='8' x2='16' y1='6' y2='6'/%3E%3Cline x1='16' x2='16' y1='14' y2='18'/%3E%3Cpath d='M16 10h.01'/%3E%3Cpath d='M12 10h.01'/%3E%3Cpath d='M8 10h.01'/%3E%3Cpath d='M12 14h.01'/%3E%3Cpath d='M8 14h.01'/%3E%3Cpath d='M12 18h.01'/%3E%3Cpath d='M8 18h.01'/%3E%3C/svg%3E">
@@ -185,13 +185,13 @@
                                 <div className="p-2 bg-white dark:bg-slate-800 rounded-xl text-slate-800 dark:text-white shadow-sm border border-white dark:border-white/10">
                                     <CalculatorIcon size={20} className="stroke-2 text-indigo-600 dark:text-indigo-400" />
                                 </div>
-                                <h1 className="text-lg font-black tracking-tighter text-slate-800 dark:text-white font-sans">餐饮店投资计算器</h1>
+                                <h1 className="text-lg font-black tracking-tighter text-slate-800 dark:text-white font-sans">餐饮投资计算器</h1>
                             </div>
                             
                             <div className="hidden md:flex items-center gap-4 text-[10px] font-bold text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 py-1.5 px-4 rounded-full shadow-sm border border-white/60 dark:border-white/10">
-                                <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> 红点部分为必填项</span>
+                                <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-red-500"></span> 必填</span>
                                 <span className="w-px h-3 bg-slate-200 dark:bg-slate-700"></span>
-                                <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> 输入会自动计算结果</span>
+                                <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> 自动</span>
                             </div>
                         </div>
 
@@ -202,12 +202,12 @@
                                 <div className="h-1 w-full bg-orange-200"></div>
                                 <div className="p-4 pb-1"><ModuleHeader icon={HammerIcon} title="新开店：建店成本" bgColor="bg-orange-50" iconColor="text-orange-500" /></div>
                                 <div className="px-4 pb-4 flex-1 space-y-0.5">
-                                    <InputField theme="orange" label="每月房租 (元)" value={newStore.rent} onChange={v => setNewStore({...newStore, rent: v})} required />
-                                    <InputField theme="orange" label="几个月一付" value={newStore.paymentTerms} onChange={v => setNewStore({...newStore, paymentTerms: v})} suffix="" required prefix="" />
+                                    <InputField theme="orange" label="房租 (元/月)" value={newStore.rent} onChange={v => setNewStore({...newStore, rent: v})} required />
+                                    <InputField theme="orange" label="支付方式 (月)" value={newStore.paymentTerms} onChange={v => setNewStore({...newStore, paymentTerms: v})} suffix="" required prefix="" />
                                     <InputField theme="orange" label="押金" value={newStore.deposit} onChange={v => setNewStore({...newStore, deposit: v})} />
-                                    <InputField theme="orange" label="转让费/中介费" value={newStore.transferFee} onChange={v => setNewStore({...newStore, transferFee: v})} />
-                                    <InputField theme="orange" label="加盟费/学习费" value={newStore.franchiseFee} onChange={v => setNewStore({...newStore, franchiseFee: v})} />
-                                    <InputField theme="orange" label="装修费/广告费" value={newStore.renovationAds} onChange={v => setNewStore({...newStore, renovationAds: v})} />
+                                    <InputField theme="orange" label="转让费/中介" value={newStore.transferFee} onChange={v => setNewStore({...newStore, transferFee: v})} />
+                                    <InputField theme="orange" label="加盟/学习费" value={newStore.franchiseFee} onChange={v => setNewStore({...newStore, franchiseFee: v})} />
+                                    <InputField theme="orange" label="装修+广告" value={newStore.renovationAds} onChange={v => setNewStore({...newStore, renovationAds: v})} />
                                     <InputField theme="orange" label="设备费" value={newStore.equipment} onChange={v => setNewStore({...newStore, equipment: v})} />
                                     <InputField theme="orange" label="首批物料" value={newStore.materials} onChange={v => setNewStore({...newStore, materials: v})} />
                                 </div>
@@ -221,8 +221,8 @@
                                 <div className="h-1 w-full bg-indigo-200"></div>
                                 <div className="p-4 pb-1"><ModuleHeader icon={PieChartIcon} title="新开店：盈亏平衡" bgColor="bg-indigo-50" iconColor="text-indigo-500" /></div>
                                 <div className="px-4 pb-4 flex-1 space-y-0.5">
-                                    <InputField theme="indigo" label="预估人工费 (每月)" value={newStore.monthlyLabor} onChange={v => setNewStore({...newStore, monthlyLabor: v})} required />
-                                    <InputField theme="indigo" label="预估水/电/杂费 (每月)" value={newStore.utilities} onChange={v => setNewStore({...newStore, utilities: v})} required />
+                                    <InputField theme="indigo" label="每月人工" value={newStore.monthlyLabor} onChange={v => setNewStore({...newStore, monthlyLabor: v})} required />
+                                    <InputField theme="indigo" label="水电杂费(月)" value={newStore.utilities} onChange={v => setNewStore({...newStore, utilities: v})} required />
                                     <InputField theme="indigo" label="预估毛利率" value={newStore.grossMargin} onChange={v => setNewStore({...newStore, grossMargin: v})} required prefix="%" suffix="" />
                                     {/* 移除了中间的装饰性文字块，极大节省空间 */}
                                 </div>
@@ -235,22 +235,22 @@
                             {/* 模块3 */}
                             <div className="bg-white dark:bg-[#111623] rounded-2xl shadow-sm border border-white dark:border-white/5 flex flex-col h-auto overflow-hidden">
                                 <div className="h-1 w-full bg-emerald-200"></div>
-                                <div className="p-4 pb-1"><ModuleHeader icon={TrendingUpIcon} title="已开店：经营分析" bgColor="bg-emerald-50" iconColor="text-emerald-500" /></div>
+                                <div className="p-4 pb-1"><ModuleHeader icon={TrendingUpIcon} title="已开店经营分析" bgColor="bg-emerald-50" iconColor="text-emerald-500" /></div>
                                 <div className="px-4 pb-4 flex-1 space-y-0.5">
                                     <InputField theme="emerald" label="营业额 / 天" value={existingStore.dailyRevenue} onChange={v => setExistingStore({...existingStore, dailyRevenue: v})} required />
                                     <InputField theme="emerald" label="房租 / 天" value={existingStore.dailyRent} onChange={v => setExistingStore({...existingStore, dailyRent: v})} required />
-                                    <InputField theme="emerald" label="人工费 / 天" value={existingStore.dailyLabor} onChange={v => setExistingStore({...existingStore, dailyLabor: v})} required />
-                                    <InputField theme="emerald" label="水、电、杂费 / 天" value={existingStore.dailyUtilities} onChange={v => setExistingStore({...existingStore, dailyUtilities: v})} required />
+                                    <InputField theme="emerald" label="人工 / 天" value={existingStore.dailyLabor} onChange={v => setExistingStore({...existingStore, dailyLabor: v})} required />
+                                    <InputField theme="emerald" label="水电杂费 / 天" value={existingStore.dailyUtilities} onChange={v => setExistingStore({...existingStore, dailyUtilities: v})} required />
                                     <InputField theme="emerald" label="实际毛利率" value={existingStore.grossMargin} onChange={v => setExistingStore({...existingStore, grossMargin: v})} required prefix="%" suffix="" />
                                 </div>
                                 <div className="bg-slate-50 dark:bg-[#0F131F] border-t border-slate-100 dark:border-white/5 mt-auto">
                                     <div className="flex border-b border-slate-100 dark:border-white/5">
-                                        <ResultBox label="毛利 (每天)" value={exGrossProfit} isNegativeRed={true} />
-                                        <ResultBox label="固定成本 (每天)" value={exFixedCost} isLast={true} isNegativeRed={true} />
+                                        <ResultBox label="毛利 (天)" value={exGrossProfit} isNegativeRed={true} />
+                                        <ResultBox label="固定成本 (天)" value={exFixedCost} isLast={true} isNegativeRed={true} />
                                     </div>
                                     <div className="flex">
-                                        <ResultBox label="保本线 (每天)" value={exBreakEven} isNegativeRed={true} subtext="固定成本 ÷ 毛利率" />
-                                        <ResultBox label="净利润 (每天)" value={exNetProfit} isNegativeRed={true} subtext="毛利 - 固定成本" isLast={true} />
+                                        <ResultBox label="保本线 (营业额)" value={exBreakEven} isNegativeRed={true} subtext="固定成本 ÷ 毛利率" />
+                                        <ResultBox label="净利润 (天)" value={exNetProfit} isNegativeRed={true} subtext="毛利 - 固定成本" isLast={true} />
                                     </div>
                                 </div>
                             </div>
